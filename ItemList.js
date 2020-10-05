@@ -5,41 +5,41 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import firebase from './firebase'
 
 export default class ItemList extends Component {
-
+     firestoreRef = firebase.firestore().collection('pk@k.co');
     constructor(props) {
         super(props);
         const userEmail = firebase.auth().currentUser.email;
-        this.firestoreRef = firebase.firestore().collection(userEmail);
-        let allTasks = this.firestoreRef.get()
-            .then(querySnapshot => {
-                allTasks = querySnapshot.docs.map(doc => doc.data().name)
-            })
+        console.log(userEmail);
+        
         this.state = {
             selected: [],
             user: userEmail,
             addNew: false,
-            tasks: this.getTasks()
+            tasks: ['yo', 'yo1,', '1o2']
         }
         console.log(this.state.tasks);
     }
 
-    getTasks(){
-        const tasksDocs = this.firestoreRef.get().then((querySnapshot)=>{
-            var tempDoc = []
-            querySnapshot.forEach((doc)=>{
-                tempDoc.push(doc.data().name);
-            })
-            console.log(tempDoc);
-            return tempDoc;
+     componentDidMount(firestoreRef){
+        this.doc().get().
+        then((snapshot)=>{
+            const tempTasks =[];
+            snapshot.map((doc)=> tempTasks.push(doc.data().name))
+            console.log(tempTasks)
+            this.setState({tasks: tempTasks})
         }
-
         )
     }
-
-    
+    allTasks(){
+      return  this.state.tasks.map((task)=>{
+            return (
+            <View style={styles.itemActive}><Text>{task}</Text></View>
+            )
+        })
+    }
 
     render() {
-        //   const tasks = this.getAllTasks();
+       
 
         if (this.state.addNew) {
             return (
@@ -56,7 +56,7 @@ export default class ItemList extends Component {
                                 color='#1D3557'
                                 onPress={() => { this.setState({ addNew: false }) }} />
                         </View>
-                        {this.getAllTasks}
+                       
                     </TouchableOpacity>
                 </>
             )
@@ -66,7 +66,7 @@ export default class ItemList extends Component {
             <>
                 <TouchableOpacity style={styles.container}>
                     <Actions />
-                    {this.getAllTasks}
+                    {this.allTasks()}
                 </TouchableOpacity>
             </>
         );
